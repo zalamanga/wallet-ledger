@@ -1,0 +1,13 @@
+{
+  "name": "wallet-ledger-browser-checks",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "check:e2e": "node frontend/node_modules/typescript/bin/tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --skipLibCheck --typeRoots ./frontend/node_modules/@types e2e/helpers.ts e2e/wallet-ledger.spec.ts playwright.config.ts",
+    "test:e2e:list": "playwright test --list"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}

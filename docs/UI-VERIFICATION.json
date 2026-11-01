@@ -1,0 +1,528 @@
+{
+  "base": "http://127.0.0.1:8170",
+  "started_at": "2026-11-01T20:27:16.913Z",
+  "completed_at": "2026-11-01T20:27:50.995Z",
+  "screenshots": [
+    {
+      "filename": "05-admin-accounts.png",
+      "width": 1440,
+      "height": 1050,
+      "sha256": "9f6e197b312fc278fc71235d256399e32c41295a4c56b2f74d271bb3322417a7",
+      "full_page": false
+    },
+    {
+      "filename": "06-reconciliation.png",
+      "width": 1440,
+      "height": 1050,
+      "sha256": "d364a1721092f3a71d7c135002c0162c8b8b531b9d4c6e55d4a29e776cec7b5d",
+      "full_page": false
+    },
+    {
+      "filename": "07-audit.png",
+      "width": 1440,
+      "height": 1050,
+      "sha256": "50bd480e7178408a02b3635ce9cedfa3f0a8f2ad16869e18e14a4cc55001f15c",
+      "full_page": false
+    },
+    {
+      "filename": "01-register-desktop.png",
+      "width": 1680,
+      "height": 1050,
+      "sha256": "aaba3da62ab9d890281cc8107cfe1593cb7580fc81d5c0ab2813e00f3c077ff6",
+      "full_page": false
+    },
+    {
+      "filename": "02-transfer-confirmation.png",
+      "width": 1440,
+      "height": 1050,
+      "sha256": "2d89bd5119487cccbfe4e7baaca1257da813e9e04b06a743d05056a6ceaf21fe",
+      "full_page": false
+    },
+    {
+      "filename": "03-journal-detail.png",
+      "width": 1440,
+      "height": 1050,
+      "sha256": "751535a6a8e7a21976c9b847f4fbaf39dffa22786c0377726a0bf8fdb6ce7aec",
+      "full_page": false
+    },
+    {
+      "filename": "04-history.png",
+      "width": 1440,
+      "height": 1050,
+      "sha256": "f0182eb970baaa778b0aa29ffa76c09c053161a21b7a85e884f2ad793fd4b270",
+      "full_page": false
+    },
+    {
+      "filename": "08-register-mobile.png",
+      "width": 390,
+      "height": 2162,
+      "sha256": "b9e5739a0600bdcaebd4e485ea6fbbd522e5049eea674ec808ef0fd9da25a3e1",
+      "full_page": true
+    }
+  ],
+  "layout": [
+    {
+      "label": "accounts-desktop",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "reconciliation-desktop",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "audit-desktop",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Akun pengguna-320",
+      "width": 320,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Rekonsiliasi-320",
+      "width": 320,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Audit-320",
+      "width": 320,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Akun pengguna-390",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Rekonsiliasi-390",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Audit-390",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Akun pengguna-768",
+      "width": 768,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Rekonsiliasi-768",
+      "width": 768,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Audit-768",
+      "width": 768,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Akun pengguna-1024",
+      "width": 1024,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Rekonsiliasi-1024",
+      "width": 1024,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Audit-1024",
+      "width": 1024,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Akun pengguna-1440",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Rekonsiliasi-1440",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Audit-1440",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Akun pengguna-390-text200",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Rekonsiliasi-390-text200",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Audit-390-text200",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Akun pengguna-1440-text200",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Rekonsiliasi-1440-text200",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "Audit-1440-text200",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "register-desktop",
+      "width": 1680,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "confirmation-desktop",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "journal-desktop",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "history-desktop",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "register-320",
+      "width": 320,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "confirmation-320",
+      "width": 320,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "journal-320",
+      "width": 320,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "history-320",
+      "width": 320,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "register-390",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "confirmation-390",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "journal-390",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "history-390",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "register-768",
+      "width": 768,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "confirmation-768",
+      "width": 768,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "journal-768",
+      "width": 768,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "history-768",
+      "width": 768,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "register-1024",
+      "width": 1024,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "confirmation-1024",
+      "width": 1024,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "journal-1024",
+      "width": 1024,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "history-1024",
+      "width": 1024,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "register-1440",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "confirmation-1440",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "journal-1440",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "history-1440",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "register-390-text200",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "confirmation-390-text200",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "journal-390-text200",
+      "width": 390,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "register-1440-text200",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "confirmation-1440-text200",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    },
+    {
+      "label": "journal-1440-text200",
+      "width": 1440,
+      "document_overflow": 0,
+      "modal_overflow": 0
+    }
+  ],
+  "scroll_regions": [
+    {
+      "view": "reconciliation-desktop",
+      "label": "Perbandingan saldo setiap dompet",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "Rekonsiliasi-320",
+      "label": "Perbandingan saldo setiap dompet",
+      "overflow": 173,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "Rekonsiliasi-768",
+      "label": "Perbandingan saldo setiap dompet",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "Rekonsiliasi-1024",
+      "label": "Perbandingan saldo setiap dompet",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "Rekonsiliasi-1440-text200",
+      "label": "Perbandingan saldo setiap dompet",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "journal-desktop",
+      "label": "Jurnal debit dan kredit",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "journal-320",
+      "label": "Jurnal debit dan kredit",
+      "overflow": 180,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "journal-390",
+      "label": "Jurnal debit dan kredit",
+      "overflow": 110,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "journal-768",
+      "label": "Jurnal debit dan kredit",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "journal-1024",
+      "label": "Jurnal debit dan kredit",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "journal-1440",
+      "label": "Jurnal debit dan kredit",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "journal-390-text200",
+      "label": "Jurnal debit dan kredit",
+      "overflow": 606,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    },
+    {
+      "view": "journal-1440-text200",
+      "label": "Jurnal debit dan kredit",
+      "overflow": 0,
+      "keyboard_reachable": true,
+      "overflow_x": "auto"
+    }
+  ],
+  "keyboard": [
+    {
+      "test": "native-confirmation-trap-escape-focus-return",
+      "browser_chrome_transitions": 3,
+      "passed": true
+    }
+  ],
+  "assets": [
+    {
+      "path": "/assets/index-CcraFuP-.js",
+      "sha256": "4ea62f7151420dddcde20fe8b8d60da455da60273cd52bdda4f74bd603f6054b"
+    },
+    {
+      "path": "/assets/index-CkDVGADc.css",
+      "sha256": "46d994a5edc8cc2676b3cc8b12c3c7ff5b6fd2176d46abfa5cf2e7cd94e04a73"
+    }
+  ],
+  "before": {
+    "hash": "f05f3d9994c005302be11fb173abdcae8994cdc57936d13e18520a69864e5668",
+    "transaction_count": 10,
+    "audit_count": 13,
+    "wallet_count": 5,
+    "balanced": true
+  },
+  "after": {
+    "hash": "f05f3d9994c005302be11fb173abdcae8994cdc57936d13e18520a69864e5668",
+    "transaction_count": 10,
+    "audit_count": 13,
+    "wallet_count": 5,
+    "balanced": true
+  },
+  "passed": true,
+  "summary": {
+    "screenshots": 8,
+    "layouts": 54,
+    "text_samples": 2389,
+    "minimum_text_contrast": 4.893694240957492,
+    "target_samples": 416,
+    "targets_at_least_44px": true,
+    "control_boundaries_at_least_3_to_1_asserted_in_all_measurements": true,
+    "unexpected_browser_errors": 0,
+    "business_mutations": 0,
+    "business_snapshot_unchanged": true
+  },
+  "reviewed_by_primary_agent": true,
+  "note": "Actual production screenshots with synthetic training data. Anonymous auth/me401 before login recorded separately. No credentials or session data are included."
+}

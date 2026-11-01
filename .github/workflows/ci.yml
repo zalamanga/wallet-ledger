@@ -1,0 +1,190 @@
+name: Verify WalletLedger
+
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/screenshots/**'
+      - 'LICENSE'
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wallet-ledger-verify-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+          --memory 384m
+          --shm-size 64m
+    env:
+      WALLETLEDGER_TEST_ADMIN_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.27.3'
+          cache-dependency-path: backend/go.sum
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - name: Verify pinned Go dependencies and formatting
+        working-directory: backend
+        run: |
+          go mod download
+          go mod verify
+          test -z "$(gofmt -l .)"
+          go vet ./...
+      - name: Verify real PostgreSQL ledger, concurrency, replay, reversals, and access
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          (cd backend && go test -count=1 -timeout 12m -json ./...) | tee artifacts/go-tests.jsonl
+          node --input-type=module <<'JS'
+          import { readFileSync } from 'node:fs';
+          const events = readFileSync('artifacts/go-tests.jsonl', 'utf8').trim().split('\n').map(JSON.parse);
+          const passed = events.filter((event) => event.Action === 'pass' && event.Test);
+          const topLevel = passed.filter((event) => !event.Test.includes('/'));
+          const packageOnly = events.filter((event) => event.Action === 'skip' && !event.Test).map((event) => event.Package);
+          if (topLevel.length < 37 || events.some((event) => event.Action === 'fail' || (event.Action === 'skip' && event.Test)))
+            throw new Error('All PostgreSQL tests must execute with zero skips.');
+          console.log(`${topLevel.length} top-level Go tests and ${passed.length-topLevel.length} subtests passed.`);
+          console.log(`Packages without test files: ${packageOnly.join(', ') || 'none'}.`);
+          JS
+      - name: Install locked frontend dependencies
+        working-directory: frontend
+        run: npm ci --no-audit --no-fund
+      - name: Test identity fencing, integer formatting, and pending-command safety
+        working-directory: frontend
+        run: npm test
+      - name: Build production frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Install locked browser checks
+        run: npm ci --no-audit --no-fund
+      - name: Type-check browser scenarios
+        run: npm run check:e2e
+      - name: Install Chromium on the disposable CI runner
+        run: npx playwright install --with-deps chromium
+      - name: Verify actual UI, HTTP, PostgreSQL, and restricted runtime role
+        shell: bash
+        env:
+          WALLETLEDGER_BASE_URL: http://127.0.0.1:8171
+          WALLETLEDGER_ALLOWED_ORIGINS: http://127.0.0.1:8171
+          WALLETLEDGER_FRONTEND_DIR: ${{ github.workspace }}/frontend/dist
+          PORT: '8171'
+          PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ github.workspace }}/artifacts/browser-results.json
+          POSTGRES_CONTAINER_ID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          browser_db="walletledger_test_$(python3 -c 'import uuid; print(uuid.uuid4().hex)')"
+          export DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:5432/$browser_db"
+          export WALLETLEDGER_RECEIPT_SECRET="$(openssl rand -hex 32)"
+          echo "::add-mask::$WALLETLEDGER_RECEIPT_SECRET"
+          docker exec "$POSTGRES_CONTAINER_ID" createdb --username=postgres "$browser_db"
+          (cd backend && go build -trimpath -o ../artifacts/walletledger ./cmd/server)
+          artifacts/walletledger migrate
+          runtime_password="$(openssl rand -hex 24)"
+          echo "::add-mask::$runtime_password"
+          docker exec -i --env POSTGRES_DB="$browser_db" --env APP_DB_PASSWORD="$runtime_password" \
+            "$POSTGRES_CONTAINER_ID" sh -s < scripts/provision-runtime.sh
+          docker exec -i --env PGPASSWORD="$runtime_password" "$POSTGRES_CONTAINER_ID" \
+            psql --host=127.0.0.1 --username=walletledger_runtime --dbname="$browser_db" --set=ON_ERROR_STOP=1 <<'SQL'
+          DO $privileges$
+          BEGIN
+            IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname=current_user
+              AND (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls)) THEN
+              RAISE EXCEPTION 'Runtime database role has excessive capabilities';
+            END IF;
+            IF has_schema_privilege(current_user,'public','CREATE')
+              OR has_database_privilege(current_user,current_database(),'CREATE')
+              OR has_database_privilege(current_user,current_database(),'TEMPORARY') THEN
+              RAISE EXCEPTION 'Runtime database role can create schema objects';
+            END IF;
+            BEGIN
+              EXECUTE 'CREATE TABLE public.walletledger_permission_probe (id integer)';
+              RAISE EXCEPTION 'Runtime role unexpectedly created a table';
+            EXCEPTION WHEN insufficient_privilege THEN NULL;
+            END;
+          END
+          $privileges$;
+          SQL
+          export DATABASE_URL="postgresql://walletledger_runtime:$runtime_password@127.0.0.1:5432/$browser_db"
+          artifacts/walletledger serve > artifacts/browser-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          deadline=$((SECONDS+60))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              echo "WalletLedger exited before readiness." >&2
+              exit 1
+            fi
+            if curl --fail --silent --max-time 2 http://127.0.0.1:8171/api/health > /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          test "$ready" -eq 1
+          npm run test:e2e -- --workers=1 --forbid-only
+          node --input-type=module <<'JS'
+          import { readFileSync } from 'node:fs';
+          const report=JSON.parse(readFileSync(process.env.PLAYWRIGHT_JSON_OUTPUT_FILE,'utf8'));
+          if (report.stats.expected !== 12 || report.stats.skipped !== 0 || report.stats.unexpected !== 0)
+            throw new Error('All 12 browser scenarios must pass with zero skips.');
+          JS
+      - name: Verify Compose production build and real health
+        shell: bash
+        run: |
+          set -euo pipefail
+          export WALLETLEDGER_DB_PASSWORD="$(openssl rand -hex 24)"
+          export WALLETLEDGER_RUNTIME_PASSWORD="$(openssl rand -hex 24)"
+          export WALLETLEDGER_RECEIPT_SECRET="$(openssl rand -hex 32)"
+          echo "::add-mask::$WALLETLEDGER_DB_PASSWORD"
+          echo "::add-mask::$WALLETLEDGER_RUNTIME_PASSWORD"
+          echo "::add-mask::$WALLETLEDGER_RECEIPT_SECRET"
+          docker compose --project-name wallet-ledger-ci --file compose.yml config --quiet
+          trap 'docker compose --project-name wallet-ledger-ci --file compose.yml down --volumes' EXIT
+          docker compose --project-name wallet-ledger-ci --file compose.yml up --build --wait --wait-timeout 180
+          curl --fail --silent --max-time 5 http://127.0.0.1:8170/api/health > /dev/null
+      - name: Preserve selected verification evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: wallet-ledger-verification-${{ github.run_attempt }}
+          path: |
+            artifacts/go-tests.jsonl
+            artifacts/browser-results.json
+            test-results/**/test-failed-*.png
+            test-results/**/error-context.md
+            test-results/**/attachments/native-dialog-focus-trace-*.json
+          if-no-files-found: ignore
+          include-hidden-files: false
+          retention-days: 7

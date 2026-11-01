@@ -1,0 +1,5 @@
+.local
+*_test.go
+testdata
+*.log
+.env*

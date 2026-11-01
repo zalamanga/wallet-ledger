@@ -1,0 +1,88 @@
+name: walletledger
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: walletledger
+      POSTGRES_USER: walletledger
+      POSTGRES_PASSWORD: ${WALLETLEDGER_DB_PASSWORD:?Run scripts/Start.ps1}
+    ports: ["127.0.0.1:5462:5432"]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    shm_size: 64mb
+    mem_limit: 256m
+    cpus: 0.5
+    command: [postgres,-c,shared_buffers=32MB,-c,max_connections=40]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL,pg_isready -U walletledger -d walletledger]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  migrate:
+    image: walletledger-api:local
+    build: {context: backend, target: runtime}
+    command: [migrate]
+    environment:
+      DATABASE_URL: postgresql://walletledger:${WALLETLEDGER_DB_PASSWORD}@db:5432/walletledger
+    depends_on: {db: {condition: service_healthy}}
+    mem_limit: 128m
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    healthcheck: {disable: true}
+  provision:
+    image: walletledger-provision:local
+    build: {context: ., dockerfile: deploy/provision.Dockerfile}
+    environment:
+      PGHOST: db
+      PGPASSWORD: ${WALLETLEDGER_DB_PASSWORD}
+      POSTGRES_USER: walletledger
+      POSTGRES_DB: walletledger
+      APP_DB_PASSWORD: ${WALLETLEDGER_RUNTIME_PASSWORD:?Run scripts/Start.ps1}
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    mem_limit: 64m
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+  api:
+    image: walletledger-api:local
+    build: {context: backend, target: runtime}
+    environment:
+      DATABASE_URL: postgresql://walletledger_runtime:${WALLETLEDGER_RUNTIME_PASSWORD}@db:5432/walletledger
+      WALLETLEDGER_ALLOWED_ORIGINS: ${WALLETLEDGER_ALLOWED_ORIGINS:-http://127.0.0.1:8170,http://localhost:8170}
+      WALLETLEDGER_COOKIE_SECURE: ${WALLETLEDGER_COOKIE_SECURE:-false}
+      WALLETLEDGER_RECEIPT_SECRET: ${WALLETLEDGER_RECEIPT_SECRET:?Restore stable private receipt secret}
+      GOMAXPROCS: "2"
+    depends_on: {provision: {condition: service_completed_successfully}}
+    mem_limit: 192m
+    cpus: 0.75
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD,/app/walletledger,health]
+      interval: 5s
+      timeout: 4s
+      retries: 30
+      start_period: 15s
+  web:
+    image: walletledger-web:local
+    build: {context: ., dockerfile: deploy/web.Dockerfile}
+    ports: ["127.0.0.1:8170:80"]
+    depends_on: {api: {condition: service_healthy}}
+    mem_limit: 64m
+    cpus: 0.5
+    cap_drop: [ALL]
+    cap_add: [CHOWN,SETGID,SETUID,NET_BIND_SERVICE]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD,wget,-q,--spider,http://127.0.0.1/api/health]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  postgres_data:
